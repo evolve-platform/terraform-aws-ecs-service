@@ -40,7 +40,6 @@ No modules.
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_ecr_image.proxy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ecr_image) | data source |
 | [aws_ecr_image.server](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ecr_image) | data source |
-| [aws_ecs_cluster.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ecs_cluster) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 | [aws_ssm_parameter.internal_listener_arn](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ssm_parameter) | data source |
 | [aws_ssm_parameter.public_listener_arn](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ssm_parameter) | data source |
@@ -49,7 +48,8 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the cluster | `string` | n/a | yes |
+| <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | ID of the cluster | `string` | `""` | no |
+| <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the cluster (DEPCRECATED, use `cluster_id`) | `string` | `""` | no |
 | <a name="input_cpu"></a> [cpu](#input\_cpu) | CPU units | `number` | `128` | no |
 | <a name="input_desired_count"></a> [desired\_count](#input\_desired\_count) | Number of desired tasks | `number` | `1` | no |
 | <a name="input_enable_internal"></a> [enable\_internal](#input\_enable\_internal) | Whether to enable internal access | `bool` | `false` | no |

@@ -1,7 +1,4 @@
 
-locals {
-  registry_url = "${data.aws_ecr_image.proxy.registry_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com"
-}
 
 resource "aws_security_group" "primary" {
   count = var.network_mode == "awsvpc" ? 1 : 0
@@ -28,7 +25,7 @@ resource "aws_security_group" "primary" {
 
 resource "aws_ecs_service" "primary" {
   name                               = var.name
-  cluster                            = data.aws_ecs_cluster.main.arn
+  cluster                            = local.cluster_id
   task_definition                    = aws_ecs_task_definition.container.arn
   desired_count                      = 1
   deployment_minimum_healthy_percent = 100
@@ -107,7 +104,7 @@ resource "aws_ecs_service" "primary" {
 resource "aws_appautoscaling_target" "primary" {
   max_capacity       = var.max_capacity
   min_capacity       = var.min_capacity
-  resource_id        = "service/${data.aws_ecs_cluster.main.cluster_name}/${aws_ecs_service.primary.name}"
+  resource_id        = "service/${local.cluster_name}/${aws_ecs_service.primary.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
   tags               = var.tags
