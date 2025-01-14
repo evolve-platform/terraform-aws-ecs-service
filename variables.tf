@@ -5,7 +5,14 @@ variable "name" {
 
 variable "cluster_name" {
   type        = string
-  description = "Name of the cluster"
+  description = "Name of the cluster (DEPCRECATED, use `cluster_id`)"
+  default     = ""
+}
+
+variable "cluster_id" {
+  type        = string
+  description = "ID of the cluster"
+  default     = ""
 }
 
 variable "hostname_internal" {
@@ -151,6 +158,11 @@ variable "network_mode" {
   type        = string
   description = "Network mode"
   default     = "bridge"
+
+  validation {
+    condition     = contains(["bridge", "host", "awsvpc", "none"], var.network_mode)
+    error_message = "network_mode must be one of 'bridge', 'host', 'awsvpc', or 'none'."
+  }
 }
 
 variable "healthcheck" {
@@ -209,6 +221,12 @@ variable "service_connect" {
     dns_name       = string
   })
   default = null
+
+  # Works only with terraform > 1.9 (checking other variables)
+  # validation {
+  #   condition     = var.network_mode == "awsvpc" || var.service_connect == null
+  #   error_message = "'service_connect' can only be configured when 'network_mode' is 'awsvpc'."
+  # }
 }
 
 variable "tags" {

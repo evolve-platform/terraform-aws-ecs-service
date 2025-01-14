@@ -12,10 +12,6 @@ data "aws_ssm_parameter" "internal_listener_arn" {
   name  = "/platform/lb-internal-listener-arn"
 }
 
-data "aws_ecs_cluster" "main" {
-  cluster_name = var.cluster_name
-}
-
 data "aws_ecr_image" "server" {
   registry_id     = var.image.registry_id
   repository_name = var.image.name
