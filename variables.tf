@@ -1,0 +1,218 @@
+variable "name" {
+  type        = string
+  description = "Name of the service"
+}
+
+variable "cluster_name" {
+  type        = string
+  description = "Name of the cluster"
+}
+
+variable "hostname_internal" {
+  type        = string
+  description = "Internal hostname (supports wildcards)"
+}
+
+variable "hostname_public" {
+  type        = string
+  description = "Internal hostname (supports wildcards)"
+  default     = ""
+}
+
+variable "image" {
+  type = object({
+    registry_id = string
+    name        = string
+    tag         = string
+  })
+  default = {
+    registry_id = ""
+    name        = ""
+    tag         = ""
+  }
+  description = "Version to deploy"
+}
+
+variable "env_name" {
+  type        = string
+  description = "name of the environment"
+}
+
+variable "env_vars" {
+  type        = any
+  default     = {}
+  description = "values to be passed to the container as environment variables"
+}
+
+variable "secrets" {
+  type        = map(string)
+  default     = {}
+  description = "values to be passed to the container as secrets"
+}
+
+variable "proxy_env_vars" {
+  type        = any
+  default     = {}
+  description = "values to be passed to the reverse proxy as environment variables"
+}
+
+variable "proxy_image" {
+  type = object({
+    registry_id = string
+    name        = string
+    tag         = string
+  })
+  default = {
+    registry_id = ""
+    name        = "reverse-proxy"
+    tag         = "latest"
+  }
+  description = "Version of the reverse proxy to deploy"
+}
+
+variable "enable_internal" {
+  type        = bool
+  description = "Whether to enable internal access"
+  default     = false
+}
+
+variable "enable_public" {
+  type        = bool
+  description = "Whether to enable public access"
+  default     = false
+}
+
+variable "priority" {
+  type        = number
+  description = "Priority of the rule"
+  default     = 1
+}
+
+variable "vpc_id" {
+  type        = string
+  description = "VPC ID"
+}
+
+variable "cpu" {
+  type        = number
+  description = "CPU units"
+  default     = 128
+}
+
+variable "subnet_ids" {
+  type        = list(string)
+  description = "Subnet IDs"
+  default     = []
+}
+
+variable "security_group_ids" {
+  type        = list(string)
+  description = "Security group IDs"
+  default     = []
+}
+
+variable "desired_count" {
+  type        = number
+  description = "Number of desired tasks"
+  default     = 1
+}
+
+variable "memory" {
+  type        = number
+  description = "Memory in MB"
+  default     = 512
+}
+
+variable "memory_reservation" {
+  type        = number
+  description = "Memory reservation in MB"
+  default     = 256
+}
+
+variable "min_capacity" {
+  type        = number
+  description = "Minimum number of tasks"
+  default     = 1
+}
+
+variable "max_capacity" {
+  type        = number
+  description = "Maximum number of tasks"
+  default     = 1
+}
+
+variable "fargate" {
+  type        = bool
+  description = "Whether to use Fargate"
+  default     = false
+}
+
+variable "network_mode" {
+  type        = string
+  description = "Network mode"
+  default     = "bridge"
+}
+
+variable "healthcheck" {
+  type = object({
+    path                = string
+    healthy_threshold   = number
+    unhealthy_threshold = number
+    timeout             = number
+    matcher             = string
+    interval            = number
+  })
+  default = {
+    path                = "/"
+    healthy_threshold   = 1
+    unhealthy_threshold = 3
+    timeout             = 2
+    matcher             = "200-499"
+    interval            = 5
+  }
+  description = "Healthcheck configuration"
+}
+
+variable "number_of_policies" {
+  type    = number
+  default = 0
+}
+
+variable "policies" {
+  type        = list(string)
+  description = "IAM policiy to attach to the task role"
+  default     = []
+}
+
+variable "policy_json" {
+  type        = string
+  description = "IAM policiy to attach to the task role"
+  default     = null
+}
+
+variable "public_paths" {
+  type        = list(string)
+  description = "Public paths"
+  default     = []
+}
+
+variable "public_headers" {
+  type    = map(string)
+  default = {}
+}
+
+variable "service_connect" {
+  description = "Service connect configuration"
+  type = object({
+    namespace      = string
+    discovery_name = string
+    dns_name       = string
+  })
+  default = null
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to apply to all resources created by this module"
+  default     = {}
+}
