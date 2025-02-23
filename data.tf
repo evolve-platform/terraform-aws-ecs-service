@@ -3,12 +3,12 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 data "aws_ssm_parameter" "public_listener_arn" {
-  count = var.public_listener_arn == "" ? 1 : 0
+  count = var.enable_public && var.public_listener_arn == "" ? 1 : 0
   name  = "/platform/lb-public-listener-arn"
 }
 
 data "aws_ssm_parameter" "internal_listener_arn" {
-  count = var.internal_listener_arn == "" ? 1 : 0
+  count = var.enable_internal && var.internal_listener_arn == "" ? 1 : 0
   name  = "/platform/lb-internal-listener-arn"
 }
 
