@@ -1,0 +1,3 @@
+kind: Fixed
+body: Fix invalid condition for listener arn
+time: 2025-02-23T17:57:46.641017+01:00
