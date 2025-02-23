@@ -1,0 +1,4 @@
+kind: Added
+body: Allow explictly passing `public_listener_arn` and `internal_listener_arn`. The
+  data source using ssm will be phased out later since it caused recreates
+time: 2025-02-23T15:56:04.459127+01:00

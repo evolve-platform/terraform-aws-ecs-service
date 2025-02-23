@@ -57,10 +57,11 @@ No modules.
 | <a name="input_env_name"></a> [env\_name](#input\_env\_name) | name of the environment | `string` | n/a | yes |
 | <a name="input_env_vars"></a> [env\_vars](#input\_env\_vars) | values to be passed to the container as environment variables | `any` | `{}` | no |
 | <a name="input_fargate"></a> [fargate](#input\_fargate) | Whether to use Fargate | `bool` | `false` | no |
-| <a name="input_healthcheck"></a> [healthcheck](#input\_healthcheck) | Healthcheck configuration | <pre>object({<br/>    path                = string<br/>    healthy_threshold   = number<br/>    unhealthy_threshold = number<br/>    timeout             = number<br/>    matcher             = string<br/>    interval            = number<br/>  })</pre> | <pre>{<br/>  "healthy_threshold": 1,<br/>  "interval": 5,<br/>  "matcher": "200-499",<br/>  "path": "/",<br/>  "timeout": 2,<br/>  "unhealthy_threshold": 3<br/>}</pre> | no |
+| <a name="input_healthcheck"></a> [healthcheck](#input\_healthcheck) | Healthcheck configuration | <pre>object({<br>    path                = string<br>    healthy_threshold   = number<br>    unhealthy_threshold = number<br>    timeout             = number<br>    matcher             = string<br>    interval            = number<br>  })</pre> | <pre>{<br>  "healthy_threshold": 1,<br>  "interval": 5,<br>  "matcher": "200-499",<br>  "path": "/",<br>  "timeout": 2,<br>  "unhealthy_threshold": 3<br>}</pre> | no |
 | <a name="input_hostname_internal"></a> [hostname\_internal](#input\_hostname\_internal) | Internal hostname (supports wildcards) | `string` | n/a | yes |
 | <a name="input_hostname_public"></a> [hostname\_public](#input\_hostname\_public) | Internal hostname (supports wildcards) | `string` | `""` | no |
-| <a name="input_image"></a> [image](#input\_image) | Version to deploy | <pre>object({<br/>    registry_id = string<br/>    name        = string<br/>    tag         = string<br/>  })</pre> | <pre>{<br/>  "name": "",<br/>  "registry_id": "",<br/>  "tag": ""<br/>}</pre> | no |
+| <a name="input_image"></a> [image](#input\_image) | Version to deploy | <pre>object({<br>    registry_id = string<br>    name        = string<br>    tag         = string<br>  })</pre> | <pre>{<br>  "name": "",<br>  "registry_id": "",<br>  "tag": ""<br>}</pre> | no |
+| <a name="input_internal_listener_arn"></a> [internal\_listener\_arn](#input\_internal\_listener\_arn) | ARN of the internal listener | `string` | `""` | no |
 | <a name="input_max_capacity"></a> [max\_capacity](#input\_max\_capacity) | Maximum number of tasks | `number` | `1` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Memory in MB | `number` | `512` | no |
 | <a name="input_memory_reservation"></a> [memory\_reservation](#input\_memory\_reservation) | Memory reservation in MB | `number` | `256` | no |
@@ -72,12 +73,13 @@ No modules.
 | <a name="input_policy_json"></a> [policy\_json](#input\_policy\_json) | IAM policiy to attach to the task role | `string` | `null` | no |
 | <a name="input_priority"></a> [priority](#input\_priority) | Priority of the rule | `number` | `1` | no |
 | <a name="input_proxy_env_vars"></a> [proxy\_env\_vars](#input\_proxy\_env\_vars) | values to be passed to the reverse proxy as environment variables | `any` | `{}` | no |
-| <a name="input_proxy_image"></a> [proxy\_image](#input\_proxy\_image) | Version of the reverse proxy to deploy | <pre>object({<br/>    registry_id = string<br/>    name        = string<br/>    tag         = string<br/>  })</pre> | <pre>{<br/>  "name": "reverse-proxy",<br/>  "registry_id": "",<br/>  "tag": "latest"<br/>}</pre> | no |
+| <a name="input_proxy_image"></a> [proxy\_image](#input\_proxy\_image) | Version of the reverse proxy to deploy | <pre>object({<br>    registry_id = string<br>    name        = string<br>    tag         = string<br>  })</pre> | <pre>{<br>  "name": "reverse-proxy",<br>  "registry_id": "",<br>  "tag": "latest"<br>}</pre> | no |
 | <a name="input_public_headers"></a> [public\_headers](#input\_public\_headers) | n/a | `map(string)` | `{}` | no |
+| <a name="input_public_listener_arn"></a> [public\_listener\_arn](#input\_public\_listener\_arn) | ARN of the public listener | `string` | `""` | no |
 | <a name="input_public_paths"></a> [public\_paths](#input\_public\_paths) | Public paths | `list(string)` | `[]` | no |
 | <a name="input_secrets"></a> [secrets](#input\_secrets) | values to be passed to the container as secrets | `map(string)` | `{}` | no |
 | <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | Security group IDs | `list(string)` | `[]` | no |
-| <a name="input_service_connect"></a> [service\_connect](#input\_service\_connect) | Service connect configuration | <pre>object({<br/>    namespace      = string<br/>    discovery_name = string<br/>    dns_name       = string<br/>  })</pre> | `null` | no |
+| <a name="input_service_connect"></a> [service\_connect](#input\_service\_connect) | Service connect configuration | <pre>object({<br>    namespace      = string<br>    discovery_name = string<br>    dns_name       = string<br>  })</pre> | `null` | no |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Subnet IDs | `list(string)` | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to all resources created by this module | `map(string)` | `{}` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | n/a | yes |

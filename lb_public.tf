@@ -23,7 +23,7 @@ resource "aws_lb_target_group" "public" {
 resource "aws_lb_listener_rule" "public" {
   count = var.enable_public ? 1 : 0
 
-  listener_arn = data.aws_ssm_parameter.public_listener_arn[0].value
+  listener_arn = local.public_listener_arn
   priority     = var.priority
   tags         = var.tags
 

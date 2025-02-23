@@ -83,10 +83,22 @@ variable "enable_internal" {
   default     = false
 }
 
+variable "internal_listener_arn" {
+  type        = string
+  description = "ARN of the internal listener"
+  default     = ""
+}
+
 variable "enable_public" {
   type        = bool
   description = "Whether to enable public access"
   default     = false
+}
+
+variable "public_listener_arn" {
+  type        = string
+  description = "ARN of the public listener"
+  default     = ""
 }
 
 variable "priority" {

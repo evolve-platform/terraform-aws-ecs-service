@@ -22,7 +22,7 @@ resource "aws_lb_target_group" "internal" {
 
 resource "aws_lb_listener_rule" "internal" {
   count        = var.enable_internal ? 1 : 0
-  listener_arn = data.aws_ssm_parameter.internal_listener_arn[0].value
+  listener_arn = local.internal_listener_arn
   priority     = var.priority
   tags         = var.tags
 
