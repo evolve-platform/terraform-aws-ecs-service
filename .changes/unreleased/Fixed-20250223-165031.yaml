@@ -1,3 +1,0 @@
-kind: Fixed
-body: Only retrieve listener arn via ssm when enabled
-time: 2025-02-23T16:50:31.243192+01:00
