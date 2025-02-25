@@ -118,6 +118,12 @@ variable "cpu" {
   default     = 128
 }
 
+variable "proxy_cpu" {
+  type        = number
+  description = "CPU units for proxy"
+  default     = 128
+}
+
 variable "subnet_ids" {
   type        = list(string)
   description = "Subnet IDs"
@@ -140,6 +146,12 @@ variable "memory" {
   type        = number
   description = "Memory in MB"
   default     = 512
+}
+
+variable "proxy_memory" {
+  type        = number
+  description = "Memory in MB for proxy"
+  default     = 32
 }
 
 variable "memory_reservation" {
