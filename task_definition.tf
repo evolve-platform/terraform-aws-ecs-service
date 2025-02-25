@@ -13,7 +13,7 @@ resource "aws_cloudwatch_log_group" "service_connect" {
 }
 
 locals {
-  proxy_memory = 32
+  proxy_memory = 128
   proxy_cpu    = 128
 
   # When not running on Fargate, add additional environment variables.
