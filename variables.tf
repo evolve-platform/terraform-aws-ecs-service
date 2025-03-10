@@ -258,3 +258,28 @@ variable "tags" {
   description = "Tags to apply to all resources created by this module"
   default     = {}
 }
+
+variable "autoscaling_policies" {
+  type = list(object({
+    metric_type        = string
+    target_value       = number
+    scale_in_cooldown  = optional(number, 300)
+    scale_out_cooldown = optional(number, 60)
+  }))
+  description = "Service autoscaling policies (TargetTrackingScaling)"
+
+  validation {
+    condition     = alltrue([for policy in var.autoscaling_policies : contains(["ECSServiceAverageCPUUtilization", "ECSServiceAverageMemoryUtilization"], policy.metric_type)])
+    error_message = "Only 'ECSServiceAverageCPUUtilization' or 'ECSServiceAverageMemoryUtilization' are currently supported."
+  }
+
+  validation {
+    condition     = alltrue([for policy in var.autoscaling_policies : policy.target_value >= 0 && policy.target_value <= 100])
+    error_message = "target_value must be between 0 and 100."
+  }
+
+  default = [{
+    metric_type  = "ECSServiceAverageCPUUtilization"
+    target_value = 70
+  }]
+}

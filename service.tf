@@ -114,8 +114,12 @@ resource "aws_appautoscaling_target" "primary" {
   ]
 }
 
-resource "aws_appautoscaling_policy" "primary_cpu_scaling" {
-  name               = "TargetTrackingScalingCPU-${aws_ecs_service.primary.name}"
+resource "aws_appautoscaling_policy" "primary" {
+  for_each = {
+    for policy in var.autoscaling_policies : policy.metric_type => policy
+  }
+
+  name               = "${each.value.metric_type}-${aws_ecs_service.primary.name}"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.primary.id
   scalable_dimension = aws_appautoscaling_target.primary.scalable_dimension
@@ -123,11 +127,11 @@ resource "aws_appautoscaling_policy" "primary_cpu_scaling" {
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
-      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+      predefined_metric_type = each.value.metric_type
     }
 
-    target_value       = 70
-    scale_in_cooldown  = 300
-    scale_out_cooldown = 60
+    target_value       = each.value.target_value
+    scale_in_cooldown  = each.value.scale_in_cooldown
+    scale_out_cooldown = each.value.scale_out_cooldown
   }
 }
