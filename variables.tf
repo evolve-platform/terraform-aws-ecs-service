@@ -261,11 +261,11 @@ variable "tags" {
 
 variable "ordered_placement_strategy" {
   description = "Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence"
-  type        = list(object({
+  type = list(object({
     field = optional(string, null)
     type  = string
   }))
-  default     = [
+  default = [
     {
       field = "attribute:ecs.availability-zone"
       type  = "spread"
