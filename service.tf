@@ -33,6 +33,7 @@ resource "aws_ecs_service" "primary" {
   wait_for_steady_state              = false
   health_check_grace_period_seconds  = 60
   tags                               = var.tags
+  availability_zone_rebalancing      = "ENABLED"
 
   deployment_circuit_breaker {
     enable   = true
@@ -63,6 +64,15 @@ resource "aws_ecs_service" "primary" {
       subnets          = var.subnet_ids
       security_groups  = [aws_security_group.primary[0].id]
       assign_public_ip = false
+    }
+  }
+
+  dynamic "ordered_placement_strategy" {
+    for_each = var.ordered_placement_strategy
+
+    content {
+      field = ordered_placement_strategy.value.field
+      type  = ordered_placement_strategy.value.type
     }
   }
 
