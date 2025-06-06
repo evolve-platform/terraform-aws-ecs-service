@@ -27,12 +27,13 @@ resource "aws_ecs_service" "primary" {
   name                               = var.name
   cluster                            = local.cluster_id
   task_definition                    = aws_ecs_task_definition.container.arn
-  desired_count                      = 1
+  desired_count                      = var.min_capacity
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
   wait_for_steady_state              = false
   health_check_grace_period_seconds  = 60
   tags                               = var.tags
+  availability_zone_rebalancing      = "ENABLED"
 
   deployment_circuit_breaker {
     enable   = true
@@ -63,6 +64,15 @@ resource "aws_ecs_service" "primary" {
       subnets          = var.subnet_ids
       security_groups  = [aws_security_group.primary[0].id]
       assign_public_ip = false
+    }
+  }
+
+  dynamic "ordered_placement_strategy" {
+    for_each = var.ordered_placement_strategy
+
+    content {
+      field = ordered_placement_strategy.value.field
+      type  = ordered_placement_strategy.value.type
     }
   }
 
@@ -121,9 +131,9 @@ resource "aws_appautoscaling_policy" "primary" {
 
   name               = "${each.value.metric_type}-${aws_ecs_service.primary.name}"
   policy_type        = "TargetTrackingScaling"
-  resource_id        = aws_appautoscaling_target.primary.id
-  scalable_dimension = aws_appautoscaling_target.primary.scalable_dimension
   service_namespace  = aws_appautoscaling_target.primary.service_namespace
+  resource_id        = aws_appautoscaling_target.primary.resource_id
+  scalable_dimension = aws_appautoscaling_target.primary.scalable_dimension
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
@@ -134,4 +144,23 @@ resource "aws_appautoscaling_policy" "primary" {
     scale_in_cooldown  = each.value.scale_in_cooldown
     scale_out_cooldown = each.value.scale_out_cooldown
   }
+}
+
+resource "aws_appautoscaling_scheduled_action" "this" {
+  for_each = { for k, v in var.autoscaling_scheduled_actions : k => v }
+
+  name               = try(each.value.name, each.key)
+  service_namespace  = aws_appautoscaling_target.primary.service_namespace
+  resource_id        = aws_appautoscaling_target.primary.resource_id
+  scalable_dimension = aws_appautoscaling_target.primary.scalable_dimension
+
+  scalable_target_action {
+    min_capacity = each.value.min_capacity
+    max_capacity = each.value.max_capacity
+  }
+
+  schedule   = each.value.schedule
+  start_time = try(each.value.start_time, null)
+  end_time   = try(each.value.end_time, null)
+  timezone   = try(each.value.timezone, null)
 }

@@ -259,6 +259,24 @@ variable "tags" {
   default     = {}
 }
 
+variable "ordered_placement_strategy" {
+  description = "Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence"
+  type = list(object({
+    field = optional(string, null)
+    type  = string
+  }))
+  default = [
+    {
+      field = "attribute:ecs.availability-zone"
+      type  = "spread"
+    },
+    {
+      field = "cpu"
+      type  = "binpack"
+    }
+  ]
+}
+
 variable "autoscaling_policies" {
   type = list(object({
     metric_type        = string
@@ -282,4 +300,17 @@ variable "autoscaling_policies" {
     metric_type  = "ECSServiceAverageCPUUtilization"
     target_value = 70
   }]
+}
+
+variable "autoscaling_scheduled_actions" {
+  type = map(object({
+    name         = optional(string, null)
+    min_capacity = number
+    max_capacity = number
+    schedule     = string
+    start_time   = optional(string, null)
+    end_time     = optional(string, null)
+  }))
+  description = "Service autoscaling scheduled actions"
+  default     = {}
 }
