@@ -20,7 +20,8 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [aws_appautoscaling_policy.primary_cpu_scaling](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appautoscaling_policy) | resource |
+| [aws_appautoscaling_policy.primary](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appautoscaling_policy) | resource |
+| [aws_appautoscaling_scheduled_action.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appautoscaling_scheduled_action) | resource |
 | [aws_appautoscaling_target.primary](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appautoscaling_target) | resource |
 | [aws_cloudwatch_log_group.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
 | [aws_cloudwatch_log_group.service_connect](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
@@ -48,6 +49,8 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_autoscaling_policies"></a> [autoscaling\_policies](#input\_autoscaling\_policies) | Service autoscaling policies (TargetTrackingScaling) | <pre>list(object({<br/>    metric_type        = string<br/>    target_value       = number<br/>    scale_in_cooldown  = optional(number, 300)<br/>    scale_out_cooldown = optional(number, 60)<br/>  }))</pre> | <pre>[<br/>  {<br/>    "metric_type": "ECSServiceAverageCPUUtilization",<br/>    "target_value": 70<br/>  }<br/>]</pre> | no |
+| <a name="input_autoscaling_scheduled_actions"></a> [autoscaling\_scheduled\_actions](#input\_autoscaling\_scheduled\_actions) | Service autoscaling scheduled actions | <pre>map(object({<br/>    name         = optional(string, null)<br/>    min_capacity = number<br/>    max_capacity = number<br/>    schedule     = string<br/>    start_time   = optional(string, null)<br/>    end_time     = optional(string, null)<br/>  }))</pre> | `{}` | no |
 | <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | ID of the cluster | `string` | `""` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the cluster (DEPCRECATED, use `cluster_id`) | `string` | `""` | no |
 | <a name="input_cpu"></a> [cpu](#input\_cpu) | CPU units | `number` | `128` | no |
@@ -57,10 +60,10 @@ No modules.
 | <a name="input_env_name"></a> [env\_name](#input\_env\_name) | name of the environment | `string` | n/a | yes |
 | <a name="input_env_vars"></a> [env\_vars](#input\_env\_vars) | values to be passed to the container as environment variables | `any` | `{}` | no |
 | <a name="input_fargate"></a> [fargate](#input\_fargate) | Whether to use Fargate | `bool` | `false` | no |
-| <a name="input_healthcheck"></a> [healthcheck](#input\_healthcheck) | Healthcheck configuration | <pre>object({<br>    path                = string<br>    healthy_threshold   = number<br>    unhealthy_threshold = number<br>    timeout             = number<br>    matcher             = string<br>    interval            = number<br>  })</pre> | <pre>{<br>  "healthy_threshold": 1,<br>  "interval": 5,<br>  "matcher": "200-499",<br>  "path": "/",<br>  "timeout": 2,<br>  "unhealthy_threshold": 3<br>}</pre> | no |
+| <a name="input_healthcheck"></a> [healthcheck](#input\_healthcheck) | Healthcheck configuration | <pre>object({<br/>    path                = string<br/>    healthy_threshold   = number<br/>    unhealthy_threshold = number<br/>    timeout             = number<br/>    matcher             = string<br/>    interval            = number<br/>  })</pre> | <pre>{<br/>  "healthy_threshold": 1,<br/>  "interval": 5,<br/>  "matcher": "200-499",<br/>  "path": "/",<br/>  "timeout": 2,<br/>  "unhealthy_threshold": 3<br/>}</pre> | no |
 | <a name="input_hostname_internal"></a> [hostname\_internal](#input\_hostname\_internal) | Internal hostname (supports wildcards) | `string` | n/a | yes |
 | <a name="input_hostname_public"></a> [hostname\_public](#input\_hostname\_public) | Internal hostname (supports wildcards) | `string` | `""` | no |
-| <a name="input_image"></a> [image](#input\_image) | Version to deploy | <pre>object({<br>    registry_id = string<br>    name        = string<br>    tag         = string<br>  })</pre> | <pre>{<br>  "name": "",<br>  "registry_id": "",<br>  "tag": ""<br>}</pre> | no |
+| <a name="input_image"></a> [image](#input\_image) | Version to deploy | <pre>object({<br/>    registry_id = string<br/>    name        = string<br/>    tag         = string<br/>  })</pre> | <pre>{<br/>  "name": "",<br/>  "registry_id": "",<br/>  "tag": ""<br/>}</pre> | no |
 | <a name="input_internal_listener_arn"></a> [internal\_listener\_arn](#input\_internal\_listener\_arn) | ARN of the internal listener | `string` | `""` | no |
 | <a name="input_max_capacity"></a> [max\_capacity](#input\_max\_capacity) | Maximum number of tasks | `number` | `1` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Memory in MB | `number` | `512` | no |
@@ -69,17 +72,20 @@ No modules.
 | <a name="input_name"></a> [name](#input\_name) | Name of the service | `string` | n/a | yes |
 | <a name="input_network_mode"></a> [network\_mode](#input\_network\_mode) | Network mode | `string` | `"bridge"` | no |
 | <a name="input_number_of_policies"></a> [number\_of\_policies](#input\_number\_of\_policies) | n/a | `number` | `0` | no |
+| <a name="input_ordered_placement_strategy"></a> [ordered\_placement\_strategy](#input\_ordered\_placement\_strategy) | Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence | <pre>list(object({<br/>    field = optional(string, null)<br/>    type  = string<br/>  }))</pre> | <pre>[<br/>  {<br/>    "field": "attribute:ecs.availability-zone",<br/>    "type": "spread"<br/>  },<br/>  {<br/>    "field": "cpu",<br/>    "type": "binpack"<br/>  }<br/>]</pre> | no |
 | <a name="input_policies"></a> [policies](#input\_policies) | IAM policiy to attach to the task role | `list(string)` | `[]` | no |
 | <a name="input_policy_json"></a> [policy\_json](#input\_policy\_json) | IAM policiy to attach to the task role | `string` | `null` | no |
 | <a name="input_priority"></a> [priority](#input\_priority) | Priority of the rule | `number` | `1` | no |
+| <a name="input_proxy_cpu"></a> [proxy\_cpu](#input\_proxy\_cpu) | CPU units for proxy | `number` | `128` | no |
 | <a name="input_proxy_env_vars"></a> [proxy\_env\_vars](#input\_proxy\_env\_vars) | values to be passed to the reverse proxy as environment variables | `any` | `{}` | no |
-| <a name="input_proxy_image"></a> [proxy\_image](#input\_proxy\_image) | Version of the reverse proxy to deploy | <pre>object({<br>    registry_id = string<br>    name        = string<br>    tag         = string<br>  })</pre> | <pre>{<br>  "name": "reverse-proxy",<br>  "registry_id": "",<br>  "tag": "latest"<br>}</pre> | no |
+| <a name="input_proxy_image"></a> [proxy\_image](#input\_proxy\_image) | Version of the reverse proxy to deploy | <pre>object({<br/>    registry_id = string<br/>    name        = string<br/>    tag         = string<br/>  })</pre> | <pre>{<br/>  "name": "reverse-proxy",<br/>  "registry_id": "",<br/>  "tag": "latest"<br/>}</pre> | no |
+| <a name="input_proxy_memory"></a> [proxy\_memory](#input\_proxy\_memory) | Memory in MB for proxy | `number` | `32` | no |
 | <a name="input_public_headers"></a> [public\_headers](#input\_public\_headers) | n/a | `map(string)` | `{}` | no |
 | <a name="input_public_listener_arn"></a> [public\_listener\_arn](#input\_public\_listener\_arn) | ARN of the public listener | `string` | `""` | no |
 | <a name="input_public_paths"></a> [public\_paths](#input\_public\_paths) | Public paths | `list(string)` | `[]` | no |
 | <a name="input_secrets"></a> [secrets](#input\_secrets) | values to be passed to the container as secrets | `map(string)` | `{}` | no |
 | <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | Security group IDs | `list(string)` | `[]` | no |
-| <a name="input_service_connect"></a> [service\_connect](#input\_service\_connect) | Service connect configuration | <pre>object({<br>    namespace      = string<br>    discovery_name = string<br>    dns_name       = string<br>  })</pre> | `null` | no |
+| <a name="input_service_connect"></a> [service\_connect](#input\_service\_connect) | Service connect configuration | <pre>object({<br/>    namespace      = string<br/>    discovery_name = string<br/>    dns_name       = string<br/>  })</pre> | `null` | no |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Subnet IDs | `list(string)` | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to all resources created by this module | `map(string)` | `{}` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | n/a | yes |
