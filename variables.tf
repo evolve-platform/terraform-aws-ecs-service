@@ -283,3 +283,16 @@ variable "autoscaling_policies" {
     target_value = 70
   }]
 }
+
+variable "autoscaling_scheduled_actions" {
+  type = map(object({
+    name         = optional(string, null)
+    min_capacity = number
+    max_capacity = number
+    schedule     = string
+    start_time   = optional(string, null)
+    end_time     = optional(string, null)
+  }))
+  description = "Service autoscaling scheduled actions"
+  default     = {}
+}
