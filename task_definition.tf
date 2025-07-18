@@ -13,8 +13,13 @@ resource "aws_cloudwatch_log_group" "service_connect" {
 }
 
 locals {
-  proxy_memory = var.proxy_memory
-  proxy_cpu    = var.proxy_cpu
+  proxy_cpu_units              = var.proxy_vcpu * 1024
+  proxy_memory_reservation_mib = var.proxy_memory_reservation_mib
+  proxy_memory_mib             = var.proxy_memory_mib == null ? var.proxy_memory_reservation_mib * 2 : var.proxy_memory_mib
+
+  app_cpu_units              = var.vcpu * 1024
+  app_memory_reservation_mib = var.memory_reservation_gib * 1024
+  app_memory_mib             = var.memory_gib == null ? var.memory_reservation_gib * 2 * 1024 : var.memory_gib * 1024
 
   # When not running on Fargate, add additional environment variables.
   env_vars = var.fargate ? var.env_vars : merge(
@@ -46,10 +51,10 @@ resource "aws_ecs_task_definition" "container" {
 
   # When we are not using Fargate, we allow the containers to use all CPU
   # capacity available on the instance.
-  cpu = var.fargate ? var.cpu : null
+  cpu = var.fargate ? local.app_cpu_units : null
 
   # When we are not using Fargate, we allow the containers to use all memory
-  memory = var.fargate ? var.memory : null
+  memory = var.fargate ? local.app_memory_mib : null
 
   container_definitions = jsonencode([
     {
@@ -57,9 +62,9 @@ resource "aws_ecs_task_definition" "container" {
 
       image             = "${local.registry_url}/${data.aws_ecr_image.server.repository_name}:${data.aws_ecr_image.server.image_tag}"
       essential         = true
-      cpu               = var.fargate ? var.cpu - local.proxy_cpu : var.cpu
-      memory            = var.fargate ? var.memory - local.proxy_memory : var.memory
-      memoryReservation = var.memory_reservation
+      cpu               = var.fargate ? local.app_cpu_units - local.proxy_cpu_units : local.app_cpu_units
+      memory            = var.fargate ? local.app_memory_mib - local.proxy_memory_mib : local.app_memory_mib
+      memoryReservation = local.app_memory_reservation_mib - local.proxy_memory_reservation_mib
 
       environment = [for k, v in local.env_vars : {
         name  = k
@@ -97,9 +102,9 @@ resource "aws_ecs_task_definition" "container" {
 
       image             = "${local.registry_url}/${data.aws_ecr_image.proxy.repository_name}:${data.aws_ecr_image.proxy.image_tag}"
       essential         = true
-      cpu               = local.proxy_cpu
-      memory            = local.proxy_memory
-      memoryReservation = local.proxy_memory
+      cpu               = local.proxy_cpu_units
+      memoryReservation = local.proxy_memory_reservation_mib
+      memory            = local.proxy_memory_mib
 
       environment = [for k, v in local.proxy_env_vars : {
         name  = k
