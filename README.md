@@ -53,8 +53,7 @@ No modules.
 | <a name="input_autoscaling_scheduled_actions"></a> [autoscaling\_scheduled\_actions](#input\_autoscaling\_scheduled\_actions) | Service autoscaling scheduled actions | <pre>map(object({<br/>    name         = optional(string, null)<br/>    min_capacity = number<br/>    max_capacity = number<br/>    schedule     = string<br/>    start_time   = optional(string, null)<br/>    end_time     = optional(string, null)<br/>  }))</pre> | `{}` | no |
 | <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | ID of the cluster | `string` | `""` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the cluster (DEPCRECATED, use `cluster_id`) | `string` | `""` | no |
-| <a name="input_cpu"></a> [cpu](#input\_cpu) | CPU units | `number` | `128` | no |
-| <a name="input_desired_count"></a> [desired\_count](#input\_desired\_count) | Number of desired tasks | `number` | `1` | no |
+| <a name="input_desired_count"></a> [desired\_count](#input\_desired\_count) | Number of desired tasks | `number` | n/a | yes |
 | <a name="input_enable_internal"></a> [enable\_internal](#input\_enable\_internal) | Whether to enable internal access | `bool` | `false` | no |
 | <a name="input_enable_public"></a> [enable\_public](#input\_enable\_public) | Whether to enable public access | `bool` | `false` | no |
 | <a name="input_env_name"></a> [env\_name](#input\_env\_name) | name of the environment | `string` | n/a | yes |
@@ -65,10 +64,10 @@ No modules.
 | <a name="input_hostname_public"></a> [hostname\_public](#input\_hostname\_public) | Internal hostname (supports wildcards) | `string` | `""` | no |
 | <a name="input_image"></a> [image](#input\_image) | Version to deploy | <pre>object({<br/>    registry_id = string<br/>    name        = string<br/>    tag         = string<br/>  })</pre> | <pre>{<br/>  "name": "",<br/>  "registry_id": "",<br/>  "tag": ""<br/>}</pre> | no |
 | <a name="input_internal_listener_arn"></a> [internal\_listener\_arn](#input\_internal\_listener\_arn) | ARN of the internal listener | `string` | `""` | no |
-| <a name="input_max_capacity"></a> [max\_capacity](#input\_max\_capacity) | Maximum number of tasks | `number` | `1` | no |
-| <a name="input_memory"></a> [memory](#input\_memory) | Memory in MB | `number` | `512` | no |
-| <a name="input_memory_reservation"></a> [memory\_reservation](#input\_memory\_reservation) | Memory reservation in MB | `number` | `256` | no |
-| <a name="input_min_capacity"></a> [min\_capacity](#input\_min\_capacity) | Minimum number of tasks | `number` | `1` | no |
+| <a name="input_max_capacity"></a> [max\_capacity](#input\_max\_capacity) | Maximum number of tasks | `number` | n/a | yes |
+| <a name="input_memory_gib"></a> [memory\_gib](#input\_memory\_gib) | Memory in GiB - hard limit. If not set, it will be calculated by multiplying memory\_reservation\_gib by 2. | `number` | n/a | yes |
+| <a name="input_memory_reservation_gib"></a> [memory\_reservation\_gib](#input\_memory\_reservation\_gib) | Memory reservation in GiB | `number` | n/a | yes |
+| <a name="input_min_capacity"></a> [min\_capacity](#input\_min\_capacity) | Minimum number of tasks | `number` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | Name of the service | `string` | n/a | yes |
 | <a name="input_network_mode"></a> [network\_mode](#input\_network\_mode) | Network mode | `string` | `"bridge"` | no |
 | <a name="input_number_of_policies"></a> [number\_of\_policies](#input\_number\_of\_policies) | n/a | `number` | `0` | no |
@@ -76,10 +75,11 @@ No modules.
 | <a name="input_policies"></a> [policies](#input\_policies) | IAM policiy to attach to the task role | `list(string)` | `[]` | no |
 | <a name="input_policy_json"></a> [policy\_json](#input\_policy\_json) | IAM policiy to attach to the task role | `string` | `null` | no |
 | <a name="input_priority"></a> [priority](#input\_priority) | Priority of the rule | `number` | `1` | no |
-| <a name="input_proxy_cpu"></a> [proxy\_cpu](#input\_proxy\_cpu) | CPU units for proxy | `number` | `128` | no |
 | <a name="input_proxy_env_vars"></a> [proxy\_env\_vars](#input\_proxy\_env\_vars) | values to be passed to the reverse proxy as environment variables | `any` | `{}` | no |
 | <a name="input_proxy_image"></a> [proxy\_image](#input\_proxy\_image) | Version of the reverse proxy to deploy | <pre>object({<br/>    registry_id = string<br/>    name        = string<br/>    tag         = string<br/>  })</pre> | <pre>{<br/>  "name": "reverse-proxy",<br/>  "registry_id": "",<br/>  "tag": "latest"<br/>}</pre> | no |
-| <a name="input_proxy_memory"></a> [proxy\_memory](#input\_proxy\_memory) | Memory in MB for proxy | `number` | `32` | no |
+| <a name="input_proxy_memory_mib"></a> [proxy\_memory\_mib](#input\_proxy\_memory\_mib) | Memory in MiB for proxy. If not set, it will be calculated by multiplying proxy\_memory\_reservation\_mib by 2. | `number` | n/a | yes |
+| <a name="input_proxy_memory_reservation_mib"></a> [proxy\_memory\_reservation\_mib](#input\_proxy\_memory\_reservation\_mib) | Memory in MiB for proxy | `number` | `50` | no |
+| <a name="input_proxy_vcpu"></a> [proxy\_vcpu](#input\_proxy\_vcpu) | vCPU units for proxy | `number` | `0.125` | no |
 | <a name="input_public_headers"></a> [public\_headers](#input\_public\_headers) | n/a | `map(string)` | `{}` | no |
 | <a name="input_public_listener_arn"></a> [public\_listener\_arn](#input\_public\_listener\_arn) | ARN of the public listener | `string` | `""` | no |
 | <a name="input_public_paths"></a> [public\_paths](#input\_public\_paths) | Public paths | `list(string)` | `[]` | no |
@@ -88,6 +88,7 @@ No modules.
 | <a name="input_service_connect"></a> [service\_connect](#input\_service\_connect) | Service connect configuration | <pre>object({<br/>    namespace      = string<br/>    discovery_name = string<br/>    dns_name       = string<br/>  })</pre> | `null` | no |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Subnet IDs | `list(string)` | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to all resources created by this module | `map(string)` | `{}` | no |
+| <a name="input_vcpu"></a> [vcpu](#input\_vcpu) | vCPU units | `number` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | n/a | yes |
 
 ## Outputs

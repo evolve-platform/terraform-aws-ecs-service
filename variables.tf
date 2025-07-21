@@ -111,17 +111,124 @@ variable "vpc_id" {
   type        = string
   description = "VPC ID"
 }
-
-variable "cpu" {
+variable "proxy_vcpu" {
   type        = number
-  description = "CPU units"
-  default     = 128
+  description = "vCPU units for proxy"
+
+  validation {
+    condition     = var.proxy_vcpu >= 0.125 && var.proxy_vcpu <= 0.25
+    error_message = "proxy_vcpu must be between 0.125 and 0.25 (vCPU)."
+  }
+  validation {
+    condition     = var.proxy_vcpu % 0.125 == 0
+    error_message = "proxy_vcpu must be a multiple of 0.125 (vCPU)."
+  }
+
+  default = 0.125
 }
 
-variable "proxy_cpu" {
+variable "proxy_memory_reservation_mib" {
   type        = number
-  description = "CPU units for proxy"
-  default     = 128
+  description = "Memory in MiB for proxy"
+
+  validation {
+    condition     = var.proxy_memory_reservation_mib >= 0.125 && var.proxy_memory_reservation_mib <= 2
+    error_message = "proxy_memory_reservation_mib must be between 0.125 and 2 (MiB)."
+  }
+
+  default = 50
+}
+
+variable "proxy_memory_mib" {
+  type        = number
+  description = "Memory in MiB for proxy. If not set, it will be calculated by multiplying proxy_memory_reservation_mib by 2."
+  nullable    = true
+
+  validation {
+    condition     = var.proxy_memory_mib >= var.proxy_memory_reservation_mib
+    error_message = "proxy_memory_mib must be greater than or equal to proxy_memory_reservation_mib."
+  }
+}
+
+variable "vcpu" {
+  type        = number
+  description = "vCPU units"
+  nullable    = false
+
+  validation {
+    condition     = var.vcpu >= 0.125 && var.vcpu <= 2
+    error_message = "vcpu must be between 0.125 and 0.25 (vCPU)."
+  }
+
+  validation {
+    condition     = var.vcpu % 0.125 == 0
+    error_message = "vcpu must be a multiple of 0.125 (vCPU)."
+  }
+}
+
+variable "memory_reservation_gib" {
+  type        = number
+  description = "Memory reservation in GiB"
+  nullable    = false
+
+  validation {
+    condition     = var.memory_reservation_gib >= 0.125 && var.memory_reservation_gib <= 2
+    error_message = "memory_reservation_gib must be between 0.125 and 2 (GiB)."
+  }
+
+  validation {
+    condition     = var.memory_reservation_gib % 0.125 == 0
+    error_message = "memory_reservation_gib must be a multiple of 0.125 (GiB)."
+  }
+}
+
+variable "memory_gib" {
+  type        = number
+  description = "Memory in GiB - hard limit. If not set, it will be calculated by multiplying memory_reservation_gib by 2."
+  nullable    = true
+
+  validation {
+    condition     = var.memory_gib >= var.memory_reservation_gib
+    error_message = "memory_gib must be greater than or equal to memory_reservation_gib."
+  }
+}
+
+variable "min_capacity" {
+  type        = number
+  description = "Minimum number of tasks"
+  nullable    = false
+
+  validation {
+    condition     = var.min_capacity >= 1
+    error_message = "min_capacity must be at least 1."
+  }
+
+  validation {
+    condition     = var.min_capacity <= var.max_capacity
+    error_message = "min_capacity must be less than or equal to max_capacity."
+  }
+}
+
+variable "max_capacity" {
+  type        = number
+  description = "Maximum number of tasks"
+  nullable    = false
+
+  validation {
+    condition     = var.max_capacity >= 1
+    error_message = "max_capacity must be at least 1."
+  }
+}
+
+variable "desired_count" {
+  type        = number
+  description = "Number of desired tasks"
+  nullable    = false
+
+  validation {
+    condition     = var.desired_count >= var.min_capacity && var.desired_count <= var.max_capacity
+    error_message = "desired_count must be between min_capacity and max_capacity."
+  }
 }
 
 variable "subnet_ids" {
@@ -134,42 +241,6 @@ variable "security_group_ids" {
   type        = list(string)
   description = "Security group IDs"
   default     = []
-}
-
-variable "desired_count" {
-  type        = number
-  description = "Number of desired tasks"
-  default     = 1
-}
-
-variable "memory" {
-  type        = number
-  description = "Memory in MB"
-  default     = 512
-}
-
-variable "proxy_memory" {
-  type        = number
-  description = "Memory in MB for proxy"
-  default     = 32
-}
-
-variable "memory_reservation" {
-  type        = number
-  description = "Memory reservation in MB"
-  default     = 256
-}
-
-variable "min_capacity" {
-  type        = number
-  description = "Minimum number of tasks"
-  default     = 1
-}
-
-variable "max_capacity" {
-  type        = number
-  description = "Maximum number of tasks"
-  default     = 1
 }
 
 variable "fargate" {
