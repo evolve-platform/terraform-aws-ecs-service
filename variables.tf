@@ -132,8 +132,8 @@ variable "proxy_memory_reservation_mib" {
   description = "Memory in MiB for proxy"
 
   validation {
-    condition     = var.proxy_memory_reservation_mib >= 0.125 && var.proxy_memory_reservation_mib <= 2
-    error_message = "proxy_memory_reservation_mib must be between 0.125 and 2 (MiB)."
+    condition     = var.proxy_memory_reservation_mib >= 50 && var.proxy_memory_reservation_mib <= 100
+    error_message = "proxy_memory_reservation_mib must be between 50 and 100 (MiB)."
   }
 
   default = 50
